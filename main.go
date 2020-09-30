@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/WisterViolet/makabo-server/wsmodule"
 )
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
@@ -14,8 +16,9 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello Response")
 	})
-	err := http.ListenAndServe(*addr, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	wm := wsmodule.NewWsModule()
+	wm.Setup()
+	http.HandleFunc("/ws", wm.HandleFunction)
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
